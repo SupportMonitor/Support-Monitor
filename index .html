@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Monitor — Withholding Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B2430;
+    --ink-soft: #2A3644;
+    --paper: #F4EFE3;
+    --paper-line: #D9CFB8;
+    --paper-line-soft: #E6DFCC;
+    --accent: #D9720B;
+    --accent-soft: #F0C48A;
+    --good: #3F6B4F;
+    --good-bg: #E3ECE5;
+    --bad: #B23A2E;
+    --bad-bg: #F3E1DE;
+    --steel: #5B6B7C;
+    --steel-light: #8A97A4;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  /* Header */
+  .brand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .brand-mark {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+  }
+
+  .brand-mark span {
+    color: var(--accent);
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: var(--steel-light);
+    margin: 0 0 40px;
+    line-height: 1.5;
+  }
+
+  /* Ledger card */
+  .ledger {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 3px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+
+  .ledger-head {
+    padding: 22px 28px 18px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .ledger-title {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .ledger-num {
+    font-family: 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--steel);
+  }
+
+  .section {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .field-row:last-child { margin-bottom: 0; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    color: var(--steel);
+    font-weight: 500;
+  }
+
+  input, select {
+    font-family: 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--paper-line);
+    background: #fff;
+    border-radius: 2px;
+    color: var(--ink);
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  select { font-family: 'Inter', sans-serif; font-variant-numeric: normal; }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .radio-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 8px;
+    border: 1.5px solid var(--paper-line);
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: #fff;
+    color: var(--steel);
+    user-select: none;
+  }
+
+  .radio-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--steel-light);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .deduction-row {
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr 0.9fr auto auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .deduction-row input[type="text"], .deduction-row input[type="number"] {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .deduction-row select {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .row-flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--paper-line);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.1;
+    color: var(--steel);
+    background: #fff;
+    padding: 2px;
+  }
+
+  .row-flag.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .row-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: var(--steel-light);
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .row-remove:hover { color: var(--bad); }
+
+  @media (max-width: 480px) {
+    .deduction-row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "label label" "amount type" "flag remove";
+    }
+    .deduction-row input[type="text"] { grid-area: label; }
+    .deduction-row input[type="number"] { grid-area: amount; }
+    .deduction-row select { grid-area: type; }
+    .deduction-row .row-flag { grid-area: flag; width: 100%; }
+    .deduction-row .row-remove { grid-area: remove; justify-self: end; }
+  }
+
+  /* Result */
+  .result {
+    padding: 28px;
+    text-align: center;
+  }
+
+  .result-status {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+
+  .result-status.good { color: var(--good); }
+  .result-status.bad { color: var(--bad); }
+  .result-status.neutral { color: var(--steel); }
+
+  .result-detail {
+    font-size: 13px;
+    color: var(--steel);
+    margin: 0 0 20px;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--paper-line);
+    padding-top: 18px;
+  }
+
+  .result-cell {
+    padding: 0 8px;
+  }
+
+  .result-cell + .result-cell {
+    border-left: 1px solid var(--paper-line);
+  }
+
+  .result-cell-label {
+    font-size: 11px;
+    color: var(--steel-light);
+    margin: 0 0 4px;
+    text-transform: none;
+  }
+
+  .result-cell-value {
+    font-family: 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .result-cell-value.bad { color: var(--bad); }
+  .result-cell-value.good { color: var(--good); }
+
+  .log-btn {
+    margin-top: 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 2px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .log-btn:hover { background: #C1640A; }
+
+  .log-btn:disabled {
+    background: var(--paper-line);
+    color: var(--steel-light);
+    cursor: not-allowed;
+  }
+
+  /* History */
+  .history {
+    margin-top: 24px;
+  }
+
+  .history-title {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--paper);
+    margin: 0 0 12px;
+  }
+
+  .history-empty {
+    font-size: 13px;
+    color: var(--steel-light);
+    padding: 16px 0;
+  }
+
+  .history-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .history-row-head {
+    font-size: 11px;
+    color: var(--steel-light);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink-soft);
+  }
+
+  .history-date {
+    color: var(--steel-light);
+    font-family: 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+  }
+
+  .history-amt {
+    font-family: 'Inter', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .history-flag {
+    justify-self: end;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .history-flag.good { background: var(--good-bg); color: var(--good); }
+  .history-flag.bad { background: var(--bad-bg); color: var(--bad); }
+
+  .footnote {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--steel-light);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr; gap: 12px; }
+    .result-cell + .result-cell { border-left: none; border-top: 1px solid var(--paper-line); padding-top: 12px; }
+    .history-row { grid-template-columns: 1fr 1fr; row-gap: 4px; }
+    .history-row-head { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-mark">SUPPORT<span>MONITOR</span></div>
+  </div>
+  <p class="tagline">We monitor your deductions, so you don't have to.</p>
+
+  <div class="ledger">
+    <div class="ledger-head">
+      <h1 class="ledger-title">Withholding Checker</h1>
+      <span class="ledger-num" id="checkNum">CHECK NO. 001</span>
+    </div>
+
+    <div class="section">
+      <p class="section-label"><span class="num">1</span>What your order says</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="orderType">How your deduction is set</label>
+          <select id="orderType">
+            <option value="percent">Percent of pay</option>
+            <option value="flat">Flat amount</option>
+          </select>
+        </div>
+        <div class="field" id="orderValueField">
+          <label for="orderValue" id="orderValueLabel">Percent (%)</label>
+          <input type="number" id="orderValue" placeholder="e.g. 20" step="0.01" min="0">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="payFreq">Pay frequency</label>
+          <select id="payFreq">
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="semimonthly">Twice a month</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="capPercent">Cap on this order (optional)</label>
+          <select id="capPercent">
+            <option value="0">No cap set</option>
+            <option value="50">50% of disposable pay</option>
+            <option value="55">55% of disposable pay</option>
+            <option value="60">60% of disposable pay</option>
+            <option value="65">65% of disposable pay</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field full">
+          <label for="orderBasis">Your order takes its percentage of...</label>
+          <select id="orderBasis">
+            <option value="disposable">Disposable pay (after taxes only)</option>
+            <option value="gross">Gross pay (before anything comes out)</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">If your order paperwork or payroll office says "14% of gross" or "21% of gross," pick gross pay above. If it says "disposable earnings" or doesn't say, disposable pay is the usual default.</p>
+    </div>
+
+    <div class="section">
+      <p class="section-label"><span class="num">2</span>Break down this pay stub</p>
+      <div class="field-row">
+        <div class="field full">
+          <label for="grossPay">Gross pay this period ($)</label>
+          <input type="number" id="grossPay" placeholder="e.g. 1200" step="0.01" min="0">
+        </div>
+      </div>
+
+      <p class="hint" style="margin-top:4px; margin-bottom:10px;">Now add every line on your stub — taxes, insurance, 401k, the order itself, anything else. Mark which one is the deduction you're actually checking.</p>
+
+      <div id="deductionRows"></div>
+      <button class="log-btn" id="addRowBtn" type="button" style="background:var(--ink); margin-top:6px;">+ Add a line from your stub</button>
+
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--paper-line);">
+        <div class="field-row">
+          <div class="field full">
+            <label for="statedTakeHome">What your stub says your take-home is (optional, for a double-check)</label>
+            <input type="number" id="statedTakeHome" placeholder="e.g. 780" step="0.01" min="0">
+          </div>
+        </div>
+        <div id="breakdownSummary" style="margin-top:14px; font-size:13px; color:var(--steel); line-height:1.9;"></div>
+      </div>
+    </div>
+
+    <div class="result" id="resultBlock">
+      <p class="result-status neutral" id="resultStatus">Enter your numbers above</p>
+      <p class="result-detail" id="resultDetail">We'll compare what should've come out against what actually did.</p>
+      <div class="result-grid">
+        <div class="result-cell">
+          <p class="result-cell-label">Expected</p>
+          <p class="result-cell-value" id="expectedVal">—</p>
+        </div>
+        <div class="result-cell">
+          <p class="result-cell-label">Actual</p>
+          <p class="result-cell-value" id="actualVal">—</p>
+        </div>
+        <div class="result-cell">
+          <p class="result-cell-label">Difference</p>
+          <p class="result-cell-value" id="diffVal">—</p>
+        </div>
+      </div>
+      <button class="log-btn" id="logBtn" disabled>Log this pay stub</button>
+    </div>
+  </div>
+
+  <div class="ledger" style="margin-top:24px;">
+    <div class="ledger-head">
+      <h1 class="ledger-title">Where to go next</h1>
+    </div>
+    <div class="section">
+      <p class="section-label"><span class="num">3</span>What's this deduction for?</p>
+      <div class="field-row">
+        <div class="field full">
+          <label for="deductionType">Pick the closest match</label>
+          <select id="deductionType">
+            <option value="">Choose one</option>
+            <option value="support">A child support or family court order</option>
+            <option value="garnishment">A general wage garnishment (debt, judgment)</option>
+            <option value="tax">A tax levy (IRS or state)</option>
+            <option value="other">Something else / not sure</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="linksSupport" style="display:none;">
+        <div class="field-row" style="margin-top:14px;">
+          <div class="field full">
+            <label for="stateSelect">State</label>
+            <select id="stateSelect">
+              <option value="MS">Mississippi</option>
+              <option value="other">Somewhere else</option>
+            </select>
+          </div>
+        </div>
+        <div id="stateLinksMS">
+          <p class="hint" style="margin-top:12px;">Mississippi runs this through the Department of Human Services, Division of Child Support Enforcement. Depending on what you found above, here's where it goes:</p>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+            <a href="https://www.mdhs.ms.gov/childsupport/pay/" target="_blank" rel="noopener" style="color:var(--accent); font-size:14px; font-weight:500; text-decoration:none;">→ Request a review of your amount (Noncustodial Parent Review Questionnaire)</a>
+            <a href="https://www.mdhs.ms.gov/childsupport/collect/" target="_blank" rel="noopener" style="color:var(--accent); font-size:14px; font-weight:500; text-decoration:none;">→ Review process &amp; guidelines overview</a>
+            <a href="https://www.mdhs.ms.gov/childsupport/" target="_blank" rel="noopener" style="color:var(--accent); font-size:14px; font-weight:500; text-decoration:none;">→ Main Division of Child Support Enforcement page (document upload, all forms, call center)</a>
+          </div>
+        </div>
+        <div id="stateLinksOther" style="display:none;">
+          <p class="hint" style="margin-top:12px;">We haven't built out direct links for your state yet — Mississippi's first since that's where we started. Search "[your state] child support enforcement office" to find your state's equivalent, or check back soon as we add more states.</p>
+        </div>
+
+        <div style="margin-top:22px; padding-top:18px; border-top:1px solid var(--paper-line);">
+          <p class="section-label" style="font-size:14px;">Changed job sites, same employer?</p>
+          <p class="hint" style="margin-bottom:12px;">If you're still with the same company but working a different site, this generates a notice you can send instead of calling it in every time.</p>
+          <div class="field-row">
+            <div class="field">
+              <label for="noticeName">Your name</label>
+              <input type="text" id="noticeName" placeholder="Full name">
+            </div>
+            <div class="field">
+              <label for="noticeCase">Case or order number (optional)</label>
+              <input type="text" id="noticeCase" placeholder="If you have one">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="noticeEmployer">Employer name</label>
+              <input type="text" id="noticeEmployer" placeholder="Company name">
+            </div>
+            <div class="field">
+              <label for="noticeDate">Date of change</label>
+              <input type="date" id="noticeDate">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field full">
+              <label for="noticeLocation">New work site / address</label>
+              <input type="text" id="noticeLocation" placeholder="Site name or address">
+            </div>
+          </div>
+          <button class="log-btn" id="noticeBtn" type="button">Generate notice</button>
+          <div id="noticeOutputWrap" style="display:none; margin-top:14px;">
+            <textarea id="noticeOutput" readonly rows="9" style="width:100%; font-family:'Inter', monospace; font-size:13px; padding:12px; border:1.5px solid var(--paper-line); border-radius:2px; color:var(--ink); background:#fff; resize:vertical;"></textarea>
+            <button class="log-btn" id="noticeCopyBtn" type="button" style="margin-top:8px; background:var(--ink);">Copy notice</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="linksGarnishment" style="display:none;">
+        <p class="hint" style="margin-top:12px;">General wage garnishments (credit card judgments, medical debt, etc.) are federally limited under the Consumer Credit Protection Act — your employer can't take more than the law allows no matter what a creditor asks for.</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+          <a href="https://www.dol.gov/agencies/whd/wage-garnishment" target="_blank" rel="noopener" style="color:var(--accent); font-size:14px; font-weight:500; text-decoration:none;">→ Department of Labor: your wage garnishment protections</a>
+        </div>
+      </div>
+
+      <div id="linksTax" style="display:none;">
+        <p class="hint" style="margin-top:12px;">Tax levies work differently than court-ordered garnishments — the IRS sets your exempt amount based on your filing status and dependents.</p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+          <a href="https://www.irs.gov/businesses/small-businesses-self-employed/information-about-wage-levies" target="_blank" rel="noopener" style="color:var(--accent); font-size:14px; font-weight:500; text-decoration:none;">→ IRS: information about wage levies</a>
+        </div>
+      </div>
+
+      <div id="linksOther" style="display:none;">
+        <p class="hint" style="margin-top:12px;">Start with your payroll or HR department — they can tell you exactly what order or notice triggered the deduction and who issued it, which tells you who to contact next.</p>
+      </div>
+
+      <p class="hint" style="margin-top:14px;">Wherever it points, you submit it yourself, in your own name — this just gets you to the right place instead of guessing.</p>
+    </div>
+  </div>
+
+  <div class="history">
+    <p class="history-title">Your log</p>
+    <div id="historyList">
+      <p class="history-empty">Nothing logged yet — check a pay stub above and log it to start your record.</p>
+    </div>
+  </div>
+
+  <p class="footnote"><strong style="color:var(--paper);">What this is:</strong> Support Monitor runs the numbers you enter against your state's rules and points you to the right official forms — it doesn't file anything for you, and it doesn't know the specifics of your case beyond what you type in.</p>
+  <p class="footnote"><strong style="color:var(--paper);">What this isn't:</strong> legal advice, a substitute for a licensed attorney, or a certified calculation guaranteed to match what a court or agency decides. If your situation is disputed, urgent, or unclear, talk to an attorney or contact your state's child support office directly. Your local bar association can provide a referral list of attorneys who handle these cases if you don't already have one.</p>
+  <p class="footnote">This tool estimates based on the numbers you enter — it doesn't connect to your employer, payroll provider, or any agency. Your log stays in this browser tab only, so save or screenshot anything you want to keep.</p>
+</div>
+
+<script>
+  const orderType = document.getElementById('orderType');
+  const orderValueLabel = document.getElementById('orderValueLabel');
+  const orderValue = document.getElementById('orderValue');
+  const orderBasis = document.getElementById('orderBasis');
+  const grossPay = document.getElementById('grossPay');
+  const capPercent = document.getElementById('capPercent');
+  const statedTakeHome = document.getElementById('statedTakeHome');
+  const deductionRows = document.getElementById('deductionRows');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const breakdownSummary = document.getElementById('breakdownSummary');
+
+  const resultStatus = document.getElementById('resultStatus');
+  const resultDetail = document.getElementById('resultDetail');
+  const expectedVal = document.getElementById('expectedVal');
+  const actualVal = document.getElementById('actualVal');
+  const diffVal = document.getElementById('diffVal');
+  const logBtn = document.getElementById('logBtn');
+  const historyList = document.getElementById('historyList');
+  const checkNum = document.getElementById('checkNum');
+
+  let history = [];
+  let currentExpected = null;
+  let currentActual = null;
+  let rowIdCounter = 0;
+  let orderRowId = null;
+
+  const defaultRows = [
+    { label: 'Federal tax', type: 'tax' },
+    { label: 'State tax', type: 'tax' },
+    { label: 'Social Security / Medicare', type: 'tax' },
+    { label: 'Health insurance', type: 'other' },
+    { label: '401k', type: 'other' },
+    { label: 'Support / order withholding', type: 'other', isOrder: true }
+  ];
+
+  function addRow(preset) {
+    const id = 'row' + (rowIdCounter++);
+    const row = document.createElement('div');
+    row.className = 'deduction-row';
+    row.id = id;
+    row.innerHTML = `
+      <input type="text" class="rowLabel" placeholder="What is this?" value="${preset && preset.label ? preset.label : ''}">
+      <input type="number" class="rowAmount" placeholder="$0.00" step="0.01" min="0">
+      <select class="rowType">
+        <option value="tax" ${preset && preset.type === 'tax' ? 'selected' : ''}>Tax</option>
+        <option value="other" ${preset && preset.type === 'other' ? 'selected' : ''}>Other</option>
+      </select>
+      <div class="row-flag" title="This is the deduction I'm checking">THIS<br>ONE</div>
+      <button type="button" class="row-remove" title="Remove">×</button>
+    `;
+    deductionRows.appendChild(row);
+
+    row.querySelector('.rowLabel').addEventListener('input', calculate);
+    row.querySelector('.rowAmount').addEventListener('input', calculate);
+    row.querySelector('.rowType').addEventListener('change', calculate);
+    row.querySelector('.row-remove').addEventListener('click', () => {
+      if (orderRowId === id) orderRowId = null;
+      row.remove();
+      calculate();
+    });
+    row.querySelector('.row-flag').addEventListener('click', () => {
+      orderRowId = (orderRowId === id) ? null : id;
+      updateFlags();
+      calculate();
+    });
+
+    if (preset && preset.isOrder) {
+      orderRowId = id;
+    }
+    updateFlags();
+    return id;
+  }
+
+  function updateFlags() {
+    deductionRows.querySelectorAll('.deduction-row').forEach(row => {
+      const flag = row.querySelector('.row-flag');
+      flag.classList.toggle('active', row.id === orderRowId);
+    });
+  }
+
+  addRowBtn.addEventListener('click', () => addRow());
+  defaultRows.forEach(r => addRow(r));
+
+  orderType.addEventListener('change', () => {
+    if (orderType.value === 'percent') {
+      orderValueLabel.textContent = 'Percent (%)';
+      orderValue.placeholder = 'e.g. 20';
+    } else {
+      orderValueLabel.textContent = 'Flat amount ($)';
+      orderValue.placeholder = 'e.g. 240';
+    }
+    calculate();
+  });
+
+  [orderValue, grossPay, capPercent, orderBasis, statedTakeHome].forEach(el => {
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+
+  function money(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function getRowsData() {
+    return Array.from(deductionRows.querySelectorAll('.deduction-row')).map(row => ({
+      id: row.id,
+      label: row.querySelector('.rowLabel').value || 'Unlabeled',
+      amount: parseFloat(row.querySelector('.rowAmount').value) || 0,
+      type: row.querySelector('.rowType').value,
+      isOrder: row.id === orderRowId
+    }));
+  }
+
+  function calculate() {
+    const ov = parseFloat(orderValue.value);
+    const gp = parseFloat(grossPay.value);
+    const cap = parseFloat(capPercent.value);
+    const rows = getRowsData();
+
+    const taxTotal = rows.filter(r => r.type === 'tax').reduce((s, r) => s + r.amount, 0);
+    const otherTotal = rows.filter(r => r.type === 'other' && !r.isOrder).reduce((s, r) => s + r.amount, 0);
+    const orderRow = rows.find(r => r.isOrder);
+    const aw = orderRow ? orderRow.amount : NaN;
+    const allDeductionsTotal = rows.reduce((s, r) => s + r.amount, 0);
+    const computedTakeHome = !isNaN(gp) ? gp - allDeductionsTotal : NaN;
+    const disposable = !isNaN(gp) ? gp - taxTotal : NaN;
+
+    // Summary panel
+    if (!isNaN(gp)) {
+      let lines = [];
+      lines.push(`Gross pay: <strong style="color:var(--ink)">${money(gp)}</strong>`);
+      lines.push(`Taxes: ${money(taxTotal)}`);
+      lines.push(`Disposable pay (gross − taxes): <strong style="color:var(--ink)">${money(disposable)}</strong>`);
+      lines.push(`Other deductions (insurance, 401k, etc.): ${money(otherTotal)}`);
+      if (orderRow) lines.push(`Order/support withheld: ${money(orderRow.amount)}`);
+      lines.push(`Computed take-home: <strong style="color:var(--ink)">${money(computedTakeHome)}</strong>`);
+
+      const stated = parseFloat(statedTakeHome.value);
+      if (!isNaN(stated)) {
+        const thDiff = Math.abs(stated - computedTakeHome);
+        if (thDiff < 0.5) {
+          lines.push(`<span style="color:var(--good); font-weight:600;">✓ Matches what your stub says your take-home is.</span>`);
+        } else {
+          lines.push(`<span style="color:var(--bad); font-weight:600;">⚠ Your stub says ${money(stated)} take-home — that's ${money(thDiff)} different from what these lines add up to. Something's missing or off.</span>`);
+        }
+      }
+      breakdownSummary.innerHTML = lines.join('<br>');
+    } else {
+      breakdownSummary.innerHTML = '';
+    }
+
+    const basis = orderBasis.value === 'gross' ? gp : disposable;
+
+    if (isNaN(ov) || isNaN(basis)) {
+      resultStatus.className = 'result-status neutral';
+      resultStatus.textContent = 'Enter your numbers above';
+      resultDetail.textContent = "We'll compare what should've come out against what actually did.";
+      expectedVal.textContent = '—';
+      actualVal.textContent = '—';
+      diffVal.textContent = '—';
+      diffVal.className = 'result-cell-value';
+      logBtn.disabled = true;
+      currentExpected = null;
+      return;
+    }
+
+    let expected;
+    if (orderType.value === 'percent') {
+      expected = basis * (ov / 100);
+    } else {
+      expected = ov;
+    }
+    if (cap > 0 && !isNaN(disposable)) {
+      const capAmount = disposable * (cap / 100);
+      if (expected > capAmount) expected = capAmount;
+    }
+
+    currentExpected = expected;
+    expectedVal.textContent = money(expected);
+
+    if (isNaN(aw)) {
+      actualVal.textContent = '—';
+      diffVal.textContent = '—';
+      diffVal.className = 'result-cell-value';
+      resultStatus.className = 'result-status neutral';
+      resultStatus.textContent = 'Mark which line is your order';
+      resultDetail.textContent = 'Tap "THIS ONE" next to the deduction you want to check, and give it an amount.';
+      logBtn.disabled = true;
+      currentActual = null;
+      return;
+    }
+
+    currentActual = aw;
+    actualVal.textContent = money(aw);
+    const diff = aw - expected;
+    const absDiff = Math.abs(diff);
+    const matches = absDiff < 0.5;
+
+    diffVal.textContent = (diff >= 0 ? '+' : '−') + money(absDiff).replace('$', '$');
+    diffVal.className = 'result-cell-value ' + (matches ? '' : 'bad');
+
+    if (matches) {
+      resultStatus.className = 'result-status good';
+      resultStatus.textContent = 'This one checks out';
+      resultDetail.textContent = 'What was withheld matches what your order calls for.';
+    } else if (diff < 0) {
+      resultStatus.className = 'result-status bad';
+      resultStatus.textContent = 'Withheld less than expected';
+      resultDetail.textContent = money(absDiff) + ' short this pay period — worth a second look.';
+    } else {
+      resultStatus.className = 'result-status bad';
+      resultStatus.textContent = 'Withheld more than expected';
+      resultDetail.textContent = money(absDiff) + ' over this pay period — worth a second look.';
+    }
+
+    logBtn.disabled = false;
+  }
+
+  logBtn.addEventListener('click', () => {
+    if (currentExpected === null || currentActual === null) return;
+    const diff = currentActual - currentExpected;
+    const matches = Math.abs(diff) < 0.5;
+    const entry = {
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      expected: currentExpected,
+      actual: currentActual,
+      matches: matches
+    };
+    history.unshift(entry);
+    renderHistory();
+    checkNum.textContent = 'CHECK NO. ' + String(history.length + 1).padStart(3, '0');
+  });
+
+  function renderHistory() {
+    if (history.length === 0) {
+      historyList.innerHTML = '<p class="history-empty">Nothing logged yet — check a pay stub above and log it to start your record.</p>';
+      return;
+    }
+    let html = '<div class="history-row history-row-head"><span>Date</span><span>Expected</span><span>Actual</span><span></span></div>';
+    history.forEach(entry => {
+      html += `<div class="history-row">
+        <span class="history-date">${entry.date}</span>
+        <span class="history-amt">${money(entry.expected)}</span>
+        <span class="history-amt">${money(entry.actual)}</span>
+        <span class="history-flag ${entry.matches ? 'good' : 'bad'}">${entry.matches ? 'MATCH' : 'FLAGGED'}</span>
+      </div>`;
+    });
+    historyList.innerHTML = html;
+  }
+
+  calculate();
+
+  document.getElementById('noticeBtn').addEventListener('click', function() {
+    const name = document.getElementById('noticeName').value || '[your name]';
+    const caseNum = document.getElementById('noticeCase').value;
+    const employer = document.getElementById('noticeEmployer').value || '[employer name]';
+    const dateVal = document.getElementById('noticeDate').value;
+    const location = document.getElementById('noticeLocation').value || '[new work site]';
+    const dateStr = dateVal ? new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '[date]';
+
+    const notice = `To Whom It May Concern,
+
+I am writing to notify you of a change in my work location. As of ${dateStr}, I am working at a new job site, but my employer has not changed.
+
+Employer: ${employer}
+New work site: ${location}
+${caseNum ? 'Case/Order number: ' + caseNum + '\n' : ''}
+Please update your records to reflect this new location. My employment and income withholding arrangement remain unchanged — only the physical work site is different. If you need any additional information to update your file, please contact me directly.
+
+Sincerely,
+${name}`;
+
+    document.getElementById('noticeOutput').value = notice;
+    document.getElementById('noticeOutputWrap').style.display = 'block';
+  });
+
+  document.getElementById('noticeCopyBtn').addEventListener('click', function() {
+    const output = document.getElementById('noticeOutput');
+    output.select();
+    document.execCommand('copy');
+    const btn = document.getElementById('noticeCopyBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  });
+
+  document.getElementById('deductionType').addEventListener('change', function() {
+    const panels = { support: 'linksSupport', garnishment: 'linksGarnishment', tax: 'linksTax', other: 'linksOther' };
+    Object.values(panels).forEach(id => document.getElementById(id).style.display = 'none');
+    if (panels[this.value]) {
+      document.getElementById(panels[this.value]).style.display = 'block';
+    }
+  });
+
+  document.getElementById('stateSelect').addEventListener('change', function() {
+    const ms = document.getElementById('stateLinksMS');
+    const other = document.getElementById('stateLinksOther');
+    if (this.value === 'MS') {
+      ms.style.display = 'block';
+      other.style.display = 'none';
+    } else {
+      ms.style.display = 'none';
+      other.style.display = 'block';
+    }
+  });
+</script>
+
+</body>
+</html>
