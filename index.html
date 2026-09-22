@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,13 +12,12 @@
     :root {
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
       --card-bg: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
       
-      /* Flag Colors */
       --short-red: #991b1b;
       --short-bg: #fef2f2;
       --short-border: #fca5a5;
@@ -32,69 +31,81 @@
       --ok-border: #bbf7d0;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 20px; max-width: 680px; margin: 0 auto; line-height: 1.5; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; max-width: 520px; margin: 0 auto; line-height: 1.4; }
     
-    header { text-align: center; margin-bottom: 24px; }
-    header h1 { font-size: 1.8rem; letter-spacing: -0.02em; }
+    header { text-align: center; margin-top: 12px; margin-bottom: 20px; }
+    header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; color: #1e293b; }
     header h1 span { color: var(--primary); }
-    header p { color: var(--muted); font-size: 0.95rem; }
+    header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .card h2 { font-size: 1.2rem; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; color: #334155; }
 
-    .privacy-badge { display: flex; align-items: center; gap: 8px; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; }
+    .privacy-badge { display: flex; align-items: center; gap: 10px; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 12px; border-radius: 12px; font-size: 0.82rem; margin-bottom: 16px; font-weight: 500; }
+
+    /* Custom Mobile Upload Button */
+    .file-upload-box { position: relative; border: 2px dashed #93c5fd; background: #f8fafc; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .file-upload-box:hover { background: #eff6ff; border-color: var(--primary); }
+    .file-upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    .upload-icon { font-size: 1.8rem; margin-bottom: 4px; display: block; }
+    .upload-text { font-size: 0.9rem; font-weight: 600; color: var(--primary); }
+    .filename-display { font-size: 0.8rem; color: var(--muted); margin-top: 6px; word-break: break-all; }
 
     .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; background: #fff; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em; color: #475569; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background: #fff; color: var(--text); appearance: none; -webkit-appearance: none; }
+    
+    .select-wrapper { position: relative; }
+    .select-wrapper::after { content: "▼"; font-size: 0.7rem; color: var(--muted); position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 480px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 
-    .btn { display: inline-block; width: 100%; text-align: center; padding: 12px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; font-size: 0.95rem; transition: background-color 0.2s; }
-    .btn-primary { background: var(--primary); color: #fff; }
+    .btn { display: block; width: 100%; text-align: center; padding: 14px; border-radius: 10px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
     .btn-primary:hover { background: var(--primary-hover); }
-    .btn-email { background: #2563eb; color: #fff; margin-bottom: 8px; }
+    .btn-email { background: #2563eb; color: #fff; }
     .btn-portal { background: #059669; color: #fff; }
 
-    /* OCR Loading State */
-    #ocrStatus { display: none; font-size: 0.85rem; color: var(--primary); font-weight: 600; text-align: center; margin-top: 8px; }
+    #ocrStatus { display: none; font-size: 0.85rem; color: var(--primary); font-weight: 600; text-align: center; margin-top: 10px; }
 
-    /* Results Box */
-    .result-box { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+    .result-box { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-radius: 10px; margin-bottom: 12px; }
+    .amount { font-size: 1.4rem; font-weight: 800; padding: 6px 14px; border-radius: 8px; }
     
-    .amount { font-size: 1.4rem; font-weight: 800; padding: 6px 14px; border-radius: 6px; }
     .flag-shortage { color: var(--short-red); background: var(--short-bg); border: 1px solid var(--short-border); }
     .flag-overage { color: var(--over-orange); background: var(--over-bg); border: 1px solid var(--over-border); }
     .flag-ok { color: var(--ok-green); background: var(--ok-bg); border: 1px solid var(--ok-border); }
 
-    .status-text { font-size: 0.9rem; color: var(--text); margin-bottom: 16px; }
-    .action-group { display: flex; flex-direction: column; gap: 8px; }
+    .status-text { font-size: 0.9rem; color: #334155; margin-bottom: 16px; line-height: 1.5; }
+    .action-group { display: flex; flex-direction: column; gap: 10px; }
     .hidden { display: none !important; }
 
-    footer { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
   <header>
     <h1>SUPPORT<span>MONITOR</span></h1>
-    <p>Verify payroll withholding accuracy & compliance on your device.</p>
+    <p>Verify payroll withholding accuracy on your device.</p>
   </header>
 
   <div class="privacy-badge">
     <span>🔒</span>
-    <span><strong>100% On-Device Privacy:</strong> No images or financial data are ever uploaded to a server or saved online.</span>
+    <span><strong>100% On-Device Privacy:</strong> No images or financial data are ever stored or uploaded.</span>
   </div>
 
   <!-- Step 1: Upload or Scan Stub -->
   <div class="card">
     <h2>1. Upload Pay Stub (Optional OCR)</h2>
-    <div class="form-group">
-      <label for="stubImage">Upload Screenshot or Photo of Pay Stub</label>
+    <div class="file-upload-box">
+      <span class="upload-icon">📷</span>
+      <span class="upload-text">Tap to Upload Screenshot or Photo</span>
+      <div id="fileName" class="filename-display">Supports PNG, JPG, JPEG</div>
       <input type="file" id="stubImage" accept="image/*" onchange="runOCR(this)">
-      <div id="ocrStatus">Scanning pay stub locally...</div>
     </div>
+    <div id="ocrStatus">⚡ Processing image locally on device...</div>
   </div>
 
   <!-- Step 2: Order & Pay Stub Details -->
@@ -104,35 +115,41 @@
     <div class="grid-2">
       <div class="form-group">
         <label for="orderType">Order Type</label>
-        <select id="orderType" onchange="toggleOrderInputs()">
-          <option value="percent">Percentage of Pay (%)</option>
-          <option value="flat">Flat Monthly Amount ($)</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="orderType" onchange="toggleOrderInputs()">
+            <option value="percent">Percentage of Pay (%)</option>
+            <option value="flat" selected>Flat Monthly Amount ($)</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
-        <label id="valueLabel" for="orderValue">Ordered Percentage (%)</label>
-        <input type="number" id="orderValue" placeholder="e.g. 14" step="0.01">
+        <label id="valueLabel" for="orderValue">Flat Monthly Amount ($)</label>
+        <input type="number" id="orderValue" placeholder="e.g. 450.00" step="0.01">
       </div>
     </div>
 
     <div class="grid-2">
       <div class="form-group">
         <label for="payFrequency">Pay Frequency</label>
-        <select id="payFrequency">
-          <option value="weekly">Weekly (52/yr)</option>
-          <option value="biweekly" selected>Biweekly / Every 2 wks (26/yr)</option>
-          <option value="semimonthly">Semi-Monthly (24/yr)</option>
-          <option value="monthly">Monthly (12/yr)</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="payFrequency">
+            <option value="weekly">Weekly (52/yr)</option>
+            <option value="biweekly" selected>Biweekly / Every 2 wks (26/yr)</option>
+            <option value="semimonthly">Semi-Monthly (24/yr)</option>
+            <option value="monthly">Monthly (12/yr)</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group" id="basisGroup">
+      <div class="form-group hidden" id="basisGroup">
         <label for="percentageBasis">Percentage Based On</label>
-        <select id="percentageBasis">
-          <option value="disposable">Disposable Pay (Net after taxes)</option>
-          <option value="gross">Gross Pay (Before taxes)</option>
-        </select>
+        <div class="select-wrapper">
+          <select id="percentageBasis">
+            <option value="disposable">Disposable Pay (Net after taxes)</option>
+            <option value="gross">Gross Pay (Before taxes)</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -144,7 +161,7 @@
 
       <div class="form-group">
         <label for="statutoryTaxes">Total Mandatory Taxes ($)</label>
-        <input type="number" id="statutoryTaxes" placeholder="Fed, State, FICA" step="0.01">
+        <input type="number" id="statutoryTaxes" placeholder="0.00" step="0.01">
       </div>
     </div>
 
@@ -155,14 +172,16 @@
       </div>
 
       <div class="form-group">
-        <label for="ccpaCap">Statutory Cap (% of Disposable)</label>
-        <select id="ccpaCap">
-          <option value="0">No Cap Set</option>
-          <option value="50">50% (Supporting second family)</option>
-          <option value="55">55% (Supporting family, in arrears)</option>
-          <option value="60" selected>60% (Single, no second family)</option>
-          <option value="65">65% (Single, in arrears)</option>
-        </select>
+        <label for="ccpaCap">Statutory Cap (% Disposable)</label>
+        <div class="select-wrapper">
+          <select id="ccpaCap">
+            <option value="0">No Cap Set</option>
+            <option value="50">50% (Supporting second family)</option>
+            <option value="55">55% (Supporting family, in arrears)</option>
+            <option value="60" selected>60% (Single, no second family)</option>
+            <option value="65">65% (Single, in arrears)</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -180,21 +199,21 @@
 
     <p id="statusMessage" class="status-text"></p>
 
-    <!-- Shortage Resolution Actions -->
+    <!-- Shortage Actions -->
     <div id="shortageActions" class="action-group hidden">
       <a id="emailPayrollShortBtn" href="#" class="btn btn-email">✉ Email HR / Payroll Department</a>
       <a href="https://ipayonline.mssdu.net/iPayOnline/" target="_blank" rel="noopener" class="btn btn-portal">🔗 Pay Missing Balance (MS iPayOnline)</a>
     </div>
 
-    <!-- Overage Dispute Actions -->
+    <!-- Overage Actions -->
     <div id="overageActions" class="action-group hidden">
       <a id="emailPayrollOverBtn" href="#" class="btn btn-email">✉ Request Payroll Correction Notice</a>
-      <a href="https://www.mdhs.ms.gov/childsupport/pay/" target="_blank" rel="noopener" class="btn btn-portal">→ Access MDHS Document Upload / Review Portal</a>
+      <a href="https://www.mdhs.ms.gov/childsupport/pay/" target="_blank" rel="noopener" class="btn btn-portal">→ Access MDHS Review Portal</a>
     </div>
   </div>
 
   <footer>
-    <p>Support Monitor provides mathematical estimates based on user inputs and public statutory guidelines. It does not provide legal advice or file legal instruments on your behalf.</p>
+    <p>Support Monitor provides mathematical estimates based on user inputs and statutory rules. It does not provide legal advice or file legal instruments.</p>
   </footer>
 
   <script>
@@ -212,11 +231,12 @@
       }
     }
 
-    // Client-Side OCR Execution via Tesseract.js
+    // Flexible Client-Side OCR & Pattern Extraction
     async function runOCR(input) {
       const file = input.files[0];
       if (!file) return;
 
+      document.getElementById('fileName').textContent = file.name;
       const status = document.getElementById('ocrStatus');
       status.style.display = 'block';
 
@@ -227,18 +247,46 @@
         await worker.terminate();
 
         status.style.display = 'none';
+        parseExtractedText(text);
 
-        // Basic Regex Extraction Example
-        const grossMatch = text.match(/(?:gross|gross pay)\s*[:\$]?\s*([0-9,]+\.[0-9]{2})/i);
-        const deductedMatch = text.match(/(?:child supp|support|garnishment)\s*[:\$]?\s*([0-9,]+\.[0-9]{2})/i);
-
-        if (grossMatch) document.getElementById('grossPay').value = grossMatch[1].replace(',', '');
-        if (deductedMatch) document.getElementById('actualDeducted').value = deductedMatch[1].replace(',', '');
-
-        alert("OCR Scan complete! Please review and verify the extracted numbers.");
       } catch (e) {
         status.style.display = 'none';
-        alert("Could not process image automatically. Please enter numbers manually.");
+        alert("OCR Scan could not process this image layout. Please enter figures manually.");
+      }
+    }
+
+    function parseExtractedText(text) {
+      const lines = text.split('\n');
+      let extractedGross = null;
+      let extractedDeduction = null;
+
+      // Robust pattern search across OCR text lines
+      lines.forEach(line => {
+        const cleanLine = line.toLowerCase();
+        const dollarMatches = line.match(/\d{1,3}(?:,\d{3})*\.\d{2}/g);
+
+        if (dollarMatches) {
+          const highestNum = Math.max(...dollarMatches.map(m => parseFloat(m.replace(',', ''))));
+
+          // Find Gross
+          if (!extractedGross && (cleanLine.includes('gross') || cleanLine.includes('total pay') || cleanLine.includes('earnings'))) {
+            extractedGross = highestNum;
+          }
+
+          // Find Child Support / Garnishment
+          if (!extractedDeduction && (cleanLine.includes('child') || cleanLine.includes('supp') || cleanLine.includes('garn') || cleanLine.includes('cs'))) {
+            extractedDeduction = highestNum;
+          }
+        }
+      });
+
+      if (extractedGross) document.getElementById('grossPay').value = extractedGross;
+      if (extractedDeduction) document.getElementById('actualDeducted').value = extractedDeduction;
+
+      if (extractedGross || extractedDeduction) {
+        alert("OCR complete! Extracted numbers filled into the form for verification.");
+      } else {
+        alert("Scan finished. Please verify or manually enter figures below.");
       }
     }
 
@@ -254,7 +302,6 @@
 
       const disposablePay = grossPay - statutoryTaxes;
 
-      // 1. Calculate Expected Order Amount for this Paycheck
       let expectedOrder = 0;
       if (orderType === 'percent') {
         const base = (percentageBasis === 'gross') ? grossPay : disposablePay;
@@ -264,17 +311,14 @@
         expectedOrder = (orderValue * 12) / periodsPerYear;
       }
 
-      // 2. Calculate Legal Statutory Cap
       let maxLegalCap = expectedOrder;
-      if (ccpaCap > 0) {
+      if (ccpaCap > 0 && disposablePay > 0) {
         maxLegalCap = disposablePay * (ccpaCap / 100);
       }
 
-      // 3. Evaluate Shortages or Overages
       const shortage = expectedOrder - actualDeducted;
       const overage = actualDeducted - maxLegalCap;
 
-      // UI Displays
       const resultsCard = document.getElementById('resultsCard');
       const varianceDisplay = document.getElementById('varianceDisplay');
       const statusMessage = document.getElementById('statusMessage');
@@ -286,37 +330,32 @@
       overageActions.classList.add('hidden');
 
       if (shortage > 0.01) {
-        // SHORTAGE FLAG
         const missingStr = shortage.toFixed(2);
         varianceDisplay.textContent = `-$${missingStr} SHORT`;
         varianceDisplay.className = "amount flag-shortage";
         
-        statusMessage.innerHTML = `<strong>Shortage Alert:</strong> Your pay stub is short by <strong>$${missingStr}</strong> for this pay period. Underpaying support orders in Mississippi can trigger accrued interest, arrears judgments, or license suspension.`;
+        statusMessage.innerHTML = `<strong>Shortage Alert:</strong> Your pay stub is short by <strong>$${missingStr}</strong>. In Mississippi, underpaying support orders can trigger accrued interest, back-pay judgments, or license suspension.`;
 
-        // Pre-filled Email for Shortage
-        const emailSub = encodeURIComponent(`Payroll Notice: Deduction Shortage Detected`);
-        const emailBody = encodeURIComponent(`Hello Payroll / HR,\n\nI reviewed my recent pay stub and noted that my support withholding was $${actualDeducted.toFixed(2)}, which is $${missingStr} less than my required obligation of $${expectedOrder.toFixed(2)}.\n\nPlease review the active Income Withholding Order (IWO) on file to ensure future paychecks withhold the correct amount.\n\nThank you,`);
+        const emailSub = encodeURIComponent(`Payroll Notice: Support Deduction Shortage`);
+        const emailBody = encodeURIComponent(`Hello Payroll / HR,\n\nI reviewed my recent pay stub and noted that my support withholding was $${actualDeducted.toFixed(2)}, which is $${missingStr} less than my required obligation of $${expectedOrder.toFixed(2)}.\n\nPlease review my Income Withholding Order (IWO) on file so future paychecks withhold the full required amount.\n\nThank you,`);
         document.getElementById('emailPayrollShortBtn').href = `mailto:?subject=${emailSub}&body=${emailBody}`;
 
         shortageActions.classList.remove('hidden');
 
       } else if (overage > 0.01) {
-        // OVERAGE FLAG
         const overStr = overage.toFixed(2);
         varianceDisplay.textContent = `+$${overStr} OVER`;
         varianceDisplay.className = "amount flag-overage";
 
-        statusMessage.innerHTML = `<strong>Overage Alert:</strong> Your employer deducted <strong>$${overStr}</strong> more than the calculated statutory limit (${ccpaCap}% of disposable pay) for this period.`;
+        statusMessage.innerHTML = `<strong>Overage Alert:</strong> Your employer deducted <strong>$${overStr}</strong> more than the calculated statutory limit for this pay period.`;
 
-        // Pre-filled Email for Overage
-        const emailSub = encodeURIComponent(`Payroll Notice: Support Deduction Exceeds Statutory Limit`);
-        const emailBody = encodeURIComponent(`Hello Payroll / HR,\n\nI reviewed my recent pay stub and noted that my support deduction of $${actualDeducted.toFixed(2)} exceeds the statutory cap of $${maxLegalCap.toFixed(2)} based on my disposable earnings.\n\nPlease adjust future withholdings to align with legal limits.\n\nThank you,`);
+        const emailSub = encodeURIComponent(`Payroll Notice: Support Deduction Over Legal Cap`);
+        const emailBody = encodeURIComponent(`Hello Payroll / HR,\n\nI reviewed my recent pay stub and noted that my support deduction of $${actualDeducted.toFixed(2)} exceeds the statutory cap of $${maxLegalCap.toFixed(2)} based on my disposable earnings.\n\nPlease adjust future withholdings to align with statutory limits.\n\nThank you,`);
         document.getElementById('emailPayrollOverBtn').href = `mailto:?subject=${emailSub}&body=${emailBody}`;
 
         overageActions.classList.remove('hidden');
 
       } else {
-        // COMPLIANT
         varianceDisplay.textContent = `$0.00`;
         varianceDisplay.className = "amount flag-ok";
         statusMessage.textContent = "Your pay stub deduction matches your expected withholding and stays within statutory caps.";
